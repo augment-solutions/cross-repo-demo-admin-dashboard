@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, LayoutGrid, List } from 'lucide-react';
+import { ProductCard } from '@ecomm/shared-ui-components';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { DataTable } from '@/components/common/DataTable';
 import { Pagination } from '@/components/common/Pagination';
@@ -12,15 +13,18 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { productsApi } from '@/services/api/products';
 import type { Product } from '@/types/product';
 
+type ViewMode = 'table' | 'grid';
+
 export default function ProductsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', page],
-    queryFn: () => productsApi.getProducts({ page, page_size: 10 }),
+    queryFn: () => productsApi.getProducts({ page, page_size: 12 }),
   });
 
   const deleteMutation = useMutation({
@@ -101,6 +105,12 @@ export default function ProductsPage() {
     },
   ];
 
+  const getProductBadge = (product: Product): string | undefined => {
+    if (product.is_featured) return 'Featured';
+    if (product.status === 'draft') return 'Draft';
+    return undefined;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -111,20 +121,74 @@ export default function ProductsPage() {
               Manage your product catalog
             </p>
           </div>
-          <Link href="/admin/products/new" className="btn-primary">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Link>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center bg-secondary-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded ${
+                  viewMode === 'grid'
+                    ? 'bg-white shadow text-primary-600'
+                    : 'text-secondary-500 hover:text-secondary-700'
+                }`}
+                title="Grid view"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded ${
+                  viewMode === 'table'
+                    ? 'bg-white shadow text-primary-600'
+                    : 'text-secondary-500 hover:text-secondary-700'
+                }`}
+                title="Table view"
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
+            <Link href="/admin/products/new" className="btn-primary">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Link>
+          </div>
         </div>
 
-        <DataTable
-          columns={columns}
-          data={data?.items || []}
-          keyExtractor={(product) => product.id}
-          onRowClick={(product) => router.push(`/admin/products/${product.id}`)}
-          isLoading={isLoading}
-          emptyMessage="No products found. Create your first product!"
-        />
+        {viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {isLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse bg-secondary-100 rounded-lg h-80" />
+              ))
+            ) : data?.items?.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-secondary-500">
+                No products found. Create your first product!
+              </div>
+            ) : (
+              data?.items?.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  originalPrice={product.compare_at_price}
+                  image={product.images?.[0]?.url || '/placeholder-product.jpg'}
+                  badge={getProductBadge(product)}
+                  inStock={product.stock > 0}
+                  onClick={(id) => router.push(`/admin/products/${id}`)}
+                />
+              ))
+            )}
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={data?.items || []}
+            keyExtractor={(product) => product.id}
+            onRowClick={(product) => router.push(`/admin/products/${product.id}`)}
+            isLoading={isLoading}
+            emptyMessage="No products found. Create your first product!"
+          />
+        )}
 
         {data && data.totalPages > 1 && (
           <Pagination
