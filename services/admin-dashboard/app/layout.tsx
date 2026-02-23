@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Admin Dashboard - E-Commerce',
+    default: 'Admin Dashboard',
     template: '%s | Admin Dashboard',
   },
   description: 'Admin dashboard for managing products and categories',
