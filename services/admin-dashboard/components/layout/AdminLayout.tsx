@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, FolderTree, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Package, FolderTree, Warehouse, LayoutDashboard, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 
@@ -15,6 +15,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Categories', href: '/admin/categories', icon: FolderTree },
+  { name: 'Inventory', href: '/admin/inventory', icon: Warehouse },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
