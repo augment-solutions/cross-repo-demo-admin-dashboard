@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { AdminLayout } from '@/components/layout/AdminLayout';
-import { Package, FolderTree, BarChart3, Settings } from 'lucide-react';
+import { Package, FolderTree, Warehouse, BarChart3, Settings } from 'lucide-react';
 
 export default function AdminHomePage() {
   return (
@@ -9,7 +9,7 @@ export default function AdminHomePage() {
         <div>
           <h1 className="text-2xl font-bold text-secondary-900">Dashboard</h1>
           <p className="mt-1 text-sm text-secondary-500">
-            Welcome to the admin dashboard. Manage your products and categories.
+            Welcome to the admin dashboard. Manage your products, categories, and inventory.
           </p>
         </div>
 
@@ -40,6 +40,21 @@ export default function AdminHomePage() {
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-secondary-900">Categories</h3>
                 <p className="text-sm text-secondary-500">Organize product categories</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/inventory"
+            className="card p-6 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Warehouse className="h-8 w-8 text-primary-600" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-secondary-900">Inventory</h3>
+                <p className="text-sm text-secondary-500">Manage stock levels</p>
               </div>
             </div>
           </Link>

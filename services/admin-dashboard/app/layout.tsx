@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     default: 'Admin Dashboard',
     template: '%s | Admin Dashboard',
   },
-  description: 'Admin dashboard for managing products and categories',
+  description: 'Admin dashboard for managing products, categories, and inventory',
 };
 
 export default function RootLayout({
